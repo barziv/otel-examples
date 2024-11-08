@@ -11,7 +11,7 @@ import {
   
   const traceExporter = new ConsoleSpanExporter();
   
-  export const otelSDK = new NodeSDK({
+  export const opentelemetrySDK = new NodeSDK({
     spanProcessor: new SimpleSpanProcessor(traceExporter),
     instrumentations: [new HttpInstrumentation(), new ExpressInstrumentation(), new AmqplibInstrumentation()],
     // instrumentations: [new HttpInstrumentation()],
@@ -19,7 +19,7 @@ import {
   
   // gracefully shut down the SDK on process exit
   process.on('SIGTERM', () => {
-    otelSDK
+    opentelemetrySDK
       .shutdown()
       .then(
         () => console.log('SDK shut down successfully'),

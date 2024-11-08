@@ -5,7 +5,7 @@ from random import randint
 from flask import Flask
 from opentelemetry import baggage
 
-from decorator import trace_wrapper
+from .decorator import trace_wrapper
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
