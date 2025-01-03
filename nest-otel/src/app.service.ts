@@ -1,11 +1,15 @@
-import { Injectable } from '@nestjs/common';
 import * as amqplib from 'amqplib';
+import { Injectable } from '@nestjs/common';
+
+import { ILogger } from './logger';
 import { Span } from './tracing-utils';
 
 @Injectable()
 export class AppService {
   channel: amqplib.Channel;
-  
+
+  constructor(private readonly _logger: ILogger) { }
+
   async createChannel() {
     if (this.channel) return;
 
@@ -13,10 +17,11 @@ export class AppService {
     this.channel = await connection.createChannel();
   }
 
-  @Span('this is test span', 'appService')
-  async getHello(): Promise<string> {
-    await this.createChannel();
-    this.channel.sendToQueue('test', Buffer.from('strong'));
-    return 'Hello World!';
+  @Span()
+  async getHello(name: string): Promise<string> {
+    // await this.createChannel();
+    // this.channel.sendToQueue('test', Buffer.from('strong'));
+    this._logger.info('got request', {});
+    return `Hello ${name}!`;
   }
 }
