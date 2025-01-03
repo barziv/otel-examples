@@ -3,6 +3,8 @@ from flask import Flask
 
 from opentelemetry import trace
 
+import tracer
+
 # Acquire a tracer
 tracer = trace.get_tracer("diceroller.tracer")
 
@@ -12,11 +14,17 @@ app = Flask(__name__)
 def roll_dice():
     return str(roll())
 
-# @tracer.start_as_current_span("roll")
+@tracer.start_as_current_span("roll")
 def roll():
     # This creates a new span that's the child of the current one
-    with tracer.start_as_current_span("roll") as rollspan:
-        res = randint(1, 6)
-        rollspan.set_attribute("roll.value", res)
-        print("test")
-        return res
+    # with tracer.start_as_current_span("roll") as rollspan:
+    res = randint(1, 6)
+        # rollspan.set_attribute("roll.value", res)
+    print("test")
+    return res
+
+
+def main():
+    app.run(host='0.0.0.0', debug=True, port=8080)
+
+main()
