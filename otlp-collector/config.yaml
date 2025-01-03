@@ -1,0 +1,39 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  attributes:
+    actions:
+      - key: "resource.attributes.host.name"
+        action: "insert"
+        from_attribute: "resource.attributes.host.name"
+      - key: "resource.attributes"
+        action: "delete"
+      - key: "process"
+        action: "delete"
+
+exporters:
+  otlp/jaeger:
+      endpoint: "192.168.1.15:4319"
+      tls:
+        insecure: true
+        insecure_skip_verify: true
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [debug, otlp/jaeger]
+    metrics:
+      receivers: [otlp]
+      exporters: [debug]
+    logs:
+      receivers: [otlp]
+      exporters: [debug]
