@@ -10,8 +10,11 @@ export function Span(name?: string, tracerName?: string, options: SpanOptions = 
   return (target: any, propertyKey: PropertyKey, propertyDescriptor: PropertyDescriptor) => {
     const originalFunction = propertyDescriptor.value;
     const wrappedFunction = function PropertyDescriptor(...args: any[]) {
-      const tracer = trace.getTracer(tracerName || 'default');
-      const spanName = name || `${target.constructor.name}.${String(propertyKey)}`;
+      const tracer = trace.getTracer(tracerName || process.env.OTEL_SERVICE_NAME || 'default');
+      const wrappedFunctionName = `${target.constructor.name}.${String(propertyKey)}`
+      const spanName = name || wrappedFunctionName;
+      if (!options.attributes) options.attributes = {};
+      options.attributes[wrappedFunctionName] = args;
 
       return tracer.startActiveSpan(spanName, options, span => {
         if (originalFunction.constructor.name === 'AsyncFunction') {
