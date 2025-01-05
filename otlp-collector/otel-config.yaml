@@ -23,6 +23,11 @@ exporters:
       tls:
         insecure: true
         insecure_skip_verify: true
+  otlp/elastic:
+    endpoint: http://192.168.1.15:8200
+    tls:
+      insecure: true
+      insecure_skip_verify: true
   debug:
     verbosity: detailed
 
@@ -30,10 +35,4 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [debug, otlp/jaeger]
-    metrics:
-      receivers: [otlp]
-      exporters: [debug]
-    logs:
-      receivers: [otlp]
-      exporters: [debug]
+      exporters: [debug, otlp/elastic]
