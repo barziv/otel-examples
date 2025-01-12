@@ -1,0 +1,39 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+extensions:
+  basicauth/client:
+    client_auth:
+      username: admin
+      password: TodoBoom6^
+
+exporters:
+  otlp/jaeger:
+      endpoint: "192.168.1.15:4319"
+      tls:
+        insecure: true
+        insecure_skip_verify: true
+  otlp/elastic:
+    endpoint: http://192.168.1.15:8200
+    tls:
+      insecure: true
+      insecure_skip_verify: true
+  opensearch/trace:
+    http:
+      endpoint: http://192.168.1.25:9200
+      auth:
+        authenticator: basicauth/client
+  debug:
+    verbosity: detailed
+
+service:
+  extensions: [basicauth/client]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [debug, opensearch/trace]
